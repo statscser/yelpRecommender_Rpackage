@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "Package: yelpRecommender\nType: Package\nTitle: A Package to Deliver Customized Yelp Recommendations\nVersion: 1.0\nDate: 2016-03-07\nAuthor: Ken Calhoon <kcalhoon@stanford.edu>\nAuthor: Xueying Liu <xyliu44@stanford.edu>\nMaintainer: Ken Calhoon <kcalhoon@stanford.edu>\nDescription: This package includes functions to generate recommendations more relevant to users based on their past scoring (recommendation engine) and user clustering.\nLicense: GPL (>= 2)\nRoxygenNote: 5.0.1\nDepends:\n    R (>= 2.10)\nImports: dplyr,\n    gender,\n    genderdata,\n    recommenderlab,\n    Matrix,\n    reshape2,\n    rjson\nSuggests: testthat,\n    knitr,\n    rmarkdown\nLazyData: true\nVignetteBuilder: knitr\nAdditional_repositories: http://packages.ropensci.org",
+    "created" : 1458087656029.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "387923327",
+    "id" : "3B450304",
+    "lastKnownWriteTime" : 1458095178,
+    "last_content_update" : 1458095178,
+    "path" : "~/Dropbox/Stats290/Project_Shared/package_folders/yelpRecommender/DESCRIPTION",
+    "project_path" : "DESCRIPTION",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "dcf"
+}

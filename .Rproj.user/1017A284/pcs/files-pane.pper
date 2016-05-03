@@ -1,0 +1,13 @@
+{
+    "path" : "~/Dropbox/Stats290/Project_Shared/package_folders/yelpRecommender/data",
+    "sortOrder" : [
+        {
+            "ascending" : false,
+            "columnIndex" : 4
+        },
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}

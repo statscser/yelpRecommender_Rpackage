@@ -1,0 +1,512 @@
+business <- business %>% filter(state == state.name)
+}
+if (!is.na(city.name)) {
+business <- business %>% filter(city == city.name)
+}
+if (!is.na(types) && length(types) > 0) {
+for (word in types) {
+business <- business %>%
+filter(grepl(word, business$categories, ignore.case = TRUE))
+}
+}
+# recommend
+if (nrow(business) == 0) {
+print("Sorry, there's no match of your search!")
+}
+business <- business %>% select(bus_name, bus_stars, categories) %>% arrange(desc(bus_stars))
+recom <- business
+names(recom) <- c("business.name", "stars", "categories")
+if (nrow(recom) > topNum) {
+recom <- recom[1:topNum,]
+}
+return(recom)
+}
+basicRecommend(join100Sample, join100Sample$user_id[1])
+library(recommenderlab)
+library(Matrix)
+library(reshape2)
+basicRecommend(join100Sample, join100Sample$user_id[1])
+recomByKeyWords(busSampleDataFrame, types = "restaurant")
+remove(list = ls())
+library(yelpRecommender)
+?listToDataFrame
+?recomByKeyWords
+data("busSampleListData")
+data("userSampleListData")
+data("reviewSampleListData")
+bus <- listToDataFrame(busSampleListData, "business")
+user <- listToDataFrame(userSampleListData, "user")
+review<-listToDataFrame(reviewSampleListData, "review")
+join <- filterAndJoin(review, user, bus)
+View(join)
+data("join100Sample")
+up <- initUserProfile(join100Sample)
+View(up)
+basicRecommend(join100Sample, join100Sample$user_id[1])
+remove(list = ls())
+install.packages("gender")
+install.packages("recommenderlab")
+install.packages("reshape2")
+library(yelpRecommender)
+search()
+setwd("~/Dropbox/Stats290/Project_Shared")
+joinedDataNew <- readRDS(file = "rds_files/joined_az_rest_final.rds")
+userProfileNew <- readRDS(file = "rds_files/initial_user_profile_final.rds")
+userProfileNewFeat <- appendUserData(joinedSample_50000,userSample_50000)
+userFeatClust <- appendKmeansCluster(userProfileNewFeat, k = 6)
+table(userFeatClust$km_cluster)
+userProfileNewFeat <- appendUserData(joinedDataNew,userProfileNew)
+install.packages("roxygen2")
+install.packages("devtools")
+search()
+userProfileNewFeat <- appendUserData(joinedDataNew,userProfileNew)
+userFeatClust <- appendKmeansCluster(userProfileNewFeat, k = 2)
+table(userFeatClust$km_cluster)
+recos <- recommendByCluster(joinedDataNew, userFeatClust)
+recos[1]
+recos[2]
+userFeatClust <- appendKmeansCluster(userProfileNewFeat, k = 4)
+table(userFeatClust$km_cluster)
+recos <- recommendByCluster(joinedDataNew, userFeatClust)
+recos[1]
+recos[1]
+recos[2]
+recos[3]
+recos[4]
+userFeatClust <- appendKmeansCluster(userProfileNewFeat, k = 4)
+table(userFeatClust$km_cluster)
+recos <- recommendByCluster(joinedDataNew, userFeatClust)
+recos[1]
+recos <- recommendByCluster(joinedDataNew, userFeatClust)
+recos[1]
+recos[3]
+devtools::use_vignette("vignette_1")
+setwd("~/Dropbox/Stats290/Project_Shared/package_folders")
+devtools::use_vignette(pkg = "yelpRecommender")
+devtools::use_vignette()
+devtools::use_vignette("vignette_1")
+addCluster <- function (joinedData, userProfile, joinVariable = "user_id") {
+left_join(joinedData,userProfile[,c("user_id","km_cluster")],by = "user_id")
+}
+full_data <- addCluster(joinedDataNew,userFeatClust)
+library(dplyr)
+full_data <- addCluster(joinedDataNew,userFeatClust)
+clusterScoreComparison <- function (data) #removed "removeNA == FALSE" parameter; data is joinedData
+data %>%
+group_by(business_id) %>%
+summarize(n = n(),
+name = unique(name.y),
+cluster_1_score = mean(stars[km_cluster_2==1]),
+cluster_1_rank = rank(cluster_1_score),
+n_1 = length(stars[km_cluster_2==1]),
+cluster_2_score = mean(stars[km_cluster_2==2]),
+n_2 = length(stars[km_cluster_2==2]),
+#t_test = t.test(stars[km_cluster_2==1],stars[km_cluster_2==2]),
+score_delta = cluster_1_score - cluster_2_score) %>%
+na.omit %>%
+#ifelse(removeNA == TRUE, na.omit(.), (.)) %>% #not working
+arrange(desc(abs(score_delta)))
+a <- clusterScoreComparison(full_data)
+clusterScoreComparison <- function (data) #removed "removeNA == FALSE" parameter; data is joinedData
+data %>%
+group_by(business_id) %>%
+summarize(n = n(),
+name = unique(bus_name),
+cluster_1_score = mean(review_stars[km_cluster_2==1]),
+cluster_1_rank = rank(cluster_1_score),
+n_1 = length(review_stars[km_cluster_2==1]),
+cluster_2_score = mean(review_stars[km_cluster_2==2]),
+n_2 = length(review_stars[km_cluster_2==2]),
+#t_test = t.test(review_stars[km_cluster_2==1],review_stars[km_cluster_2==2]),
+score_delta = cluster_1_score - cluster_2_score) %>%
+na.omit %>%
+#ifelse(removeNA == TRUE, na.omit(.), (.)) %>% #not working
+arrange(desc(abs(score_delta)))
+a <- clusterScoreComparison(full_data)
+clusterScoreComparison <- function (data) #removed "removeNA == FALSE" parameter; data is joinedData
+data %>%
+group_by(business_id) %>%
+summarize(n = n(),
+name = unique(bus_name),
+cluster_1_score = mean(review_stars[km_cluster==1]),
+cluster_1_rank = rank(cluster_1_score),
+n_1 = length(review_stars[km_cluster==1]),
+cluster_2_score = mean(review_stars[km_cluster==2]),
+n_2 = length(review_stars[km_cluster==2]),
+#t_test = t.test(review_stars[km_cluster_2==1],review_stars[km_cluster_2==2]),
+score_delta = cluster_1_score - cluster_2_score) %>%
+na.omit %>%
+#ifelse(removeNA == TRUE, na.omit(.), (.)) %>% #not working
+arrange(desc(abs(score_delta)))
+a <- clusterScoreComparison(full_data)
+View(a)
+clusterScoreComparison <- function (data) #removed "removeNA == FALSE" parameter; data is joinedData
+data %>%
+group_by(business_id) %>%
+summarize(n = n(),
+name = unique(bus_name),
+clust_1_mean = mean(review_stars[km_cluster==1]),
+#cluster_1_rank = rank(cluster_1_score),
+n_1 = length(review_stars[km_cluster==1]),
+clust_2_mean = mean(review_stars[km_cluster==2]),
+n_2 = length(review_stars[km_cluster==2]),
+clust_3_mean = mean(review_stars[km_cluster==3]),
+n_3 = length(review_stars[km_cluster==3]),
+clust_4_mean = mean(review_stars[km_cluster==4]),
+n_4 = length(review_stars[km_cluster==4]),
+#t_test = t.test(review_stars[km_cluster_2==1],review_stars[km_cluster_2==2]),
+score_delta = clust_1_mean - clust_2_mean) %>%
+na.omit %>%
+#ifelse(removeNA == TRUE, na.omit(.), (.)) %>% #not working
+arrange(desc(abs(score_delta)))
+a <- clusterScoreComparison(full_data)
+clusterScoreComparison <- function (data) #removed "removeNA == FALSE" parameter; data is joinedData
+data %>%
+group_by(business_id) %>%
+summarize(n = n(),
+name = unique(bus_name),
+total_mean = mean(review_stars),
+n = length(review_stars),
+clust_1_mean = mean(review_stars[km_cluster==1]),
+#cluster_1_rank = rank(cluster_1_score),
+n_1 = length(review_stars[km_cluster==1]),
+clust_2_mean = mean(review_stars[km_cluster==2]),
+n_2 = length(review_stars[km_cluster==2]),
+clust_3_mean = mean(review_stars[km_cluster==3]),
+n_3 = length(review_stars[km_cluster==3]),
+clust_4_mean = mean(review_stars[km_cluster==4]),
+n_4 = length(review_stars[km_cluster==4]),
+#t_test = t.test(review_stars[km_cluster_2==1],review_stars[km_cluster_2==2]),
+score_delta = clust_1_mean - clust_2_mean) %>%
+na.omit %>%
+#ifelse(removeNA == TRUE, na.omit(.), (.)) %>% #not working
+arrange(desc(abs(score_delta)))
+clusterScoreComparison <- function (data) #removed "removeNA == FALSE" parameter; data is joinedData
+data %>%
+group_by(business_id) %>%
+summarize(n = n(),
+name = unique(bus_name),
+total_mean = mean(review_stars),
+n = length(review_stars),
+clust_1_mean = mean(review_stars[km_cluster==1]),
+#cluster_1_rank = rank(cluster_1_score),
+n_1 = length(review_stars[km_cluster==1]),
+clust_2_mean = mean(review_stars[km_cluster==2]),
+n_2 = length(review_stars[km_cluster==2]),
+clust_3_mean = mean(review_stars[km_cluster==3]),
+n_3 = length(review_stars[km_cluster==3]),
+clust_4_mean = mean(review_stars[km_cluster==4]),
+n_4 = length(review_stars[km_cluster==4]),
+#t_test = t.test(review_stars[km_cluster_2==1],review_stars[km_cluster_2==2]),
+delta1 = clust_1_mean - total_mean,
+delta2 = clust_2_mean - total_mean,
+delta3 = clust_3_mean - total_mean,
+delta4 = clust_4_mean - total_mean) %>%
+na.omit %>%
+#ifelse(removeNA == TRUE, na.omit(.), (.)) %>% #not working
+arrange(desc(abs(delta1)))
+a <- clusterScoreComparison(full_data)
+View(a)
+y <- a
+plot(y$total_mean,y$delta1)
+plot(y$total_mean,y$delta1,y$delta2)
+plot(y$total_mean,y$delta1,col = 2)
+par(new = TRUE)
+plot(y$total_mean,y$delta1,axes = FALSE, col = 3)
+par(new = FALSE)
+plot(y$total_mean,y$delta1,col = 2)
+par(new = TRUE)
+plot(y$total_mean,y$delta2,axes = FALSE, col = 3)
+plot(y$total_mean,y$delta1,col = 2)
+par(new = TRUE)
+plot(y$delta2,axes = FALSE, col = 3)
+plot(y$total_mean,y$delta1,col = 2)
+par(new = TRUE)
+plot(y$delta2,axes = FALSE, col = 3)
+par(new = TRUE)
+plot(y$delta3,axes = FALSE, col = 4)
+par(new = TRUE)
+plot(y$delta2,axes = FALSE, col = 5)
+par(new = FALSE)
+plot(y$total_mean,y$delta1,col = 2)
+abline(h = mean(y$delta1))
+plot(y$total_mean,y$delta1,col = 2)
+abline(h = mean(y$delta1),col = 2)
+plot(y$total_mean,y$delta1,col = 2)
+abline(h = mean(y$delta1),col = 2)
+par(new = TRUE)
+plot(y$delta2,axes = FALSE, col = 3)
+abline(h = mean(y$delta2),col = 3)
+par(new = TRUE)
+plot(y$delta3,axes = FALSE, col = 4)
+abline(h = mean(y$delta3),col = 4)
+par(new = TRUE)
+plot(y$delta4,axes = FALSE, col = 5)
+abline(h = mean(y$delta4),col = 5)
+par(new = FALSE)
+boxplot(y$delta1)
+boxplot(y$delta2)
+boxplot(y$delta1)
+boxplot(y$delta2)
+boxplot(y$delta3)
+boxplot(y$delta4)
+summary(y$delta1)
+summary(y$delta2)
+summary(y$delta3)
+summary(y$delta4)
+top_50_clust_1 <- y %>% filter(.,n_1 > 2, n_2 > 2) %>% arrange(desc(clust_1_mean),desc(n_1)) %>% slice(1:50)
+top_50_clust_2 <- y %>% filter(.,n_1 > 2, n_2 > 2) %>% arrange(desc(clust_2_mean),desc(n_1)) %>% slice(1:50)
+common_cluster_1_2_rest_names <- intersect(top_50_clstr_1$name, top_50_clstr_2$name)
+common_cluster_1_2_rest_names <- intersect(top_50_clust_1$name, top_50_clust_2$name)
+top_50_clust_1 <- y %>% filter(.,n_1 >= 1, n_2 >= 1) %>% arrange(desc(clust_1_mean),desc(n_1)) %>% slice(1:50)
+top_50_clust_2 <- y %>% filter(.,n_1 >= 1, n_2 >= 1) %>% arrange(desc(clust_2_mean),desc(n_1)) %>% slice(1:50)
+common_cluster_1_2_rest_names <- intersect(top_50_clust_1$name, top_50_clust_2$name)
+Reduce(intersect,list(top_50_clust_1$name,top_50_clust_2$name))
+top_50_clust_1 <- y %>% filter(.,n_1 >= 1, n_2 >= 1) %>% arrange(desc(clust_1_mean),desc(n_1)) %>% slice(1:50)
+top_50_clust_2 <- y %>% filter(.,n_1 >= 1, n_2 >= 1) %>% arrange(desc(clust_2_mean),desc(n_2)) %>% slice(1:50)
+top_50_clust_3 <- y %>% filter(.,n_1 >= 1, n_2 >= 1) %>% arrange(desc(clust_3_mean),desc(n_3)) %>% slice(1:50)
+top_50_clust_4 <- y %>% filter(.,n_1 >= 1, n_2 >= 1) %>% arrange(desc(clust_4_mean),desc(n_4)) %>% slice(1:50)
+top_50_clust_2 <- y %>% filter(.,n_1 >= 1, n_2 >= 1) %>% arrange(desc(clust_2_mean),desc(n_2)) %>% slice(1:50) %>% select(name)
+top_50_clust_3 <- y %>% filter(.,n_1 >= 1, n_2 >= 1) %>% arrange(desc(clust_3_mean),desc(n_3)) %>% slice(1:50) %>% select(name)
+top_50_clust_4 <- y %>% filter(.,n_1 >= 1, n_2 >= 1) %>% arrange(desc(clust_4_mean),desc(n_4)) %>% slice(1:50) %>% select(name)
+top_50_clust_1 <- y %>% filter(.,n_1 >= 1, n_2 >= 1) %>% arrange(desc(clust_1_mean),desc(n_1)) %>% slice(1:50) %>% select(name)
+common_cluster_1_2_rest_names <- intersect(top_50_clust_1, top_50_clust_2, top_50_clust_2, top_50_clust_2)
+View(common_cluster_1_2_rest_names)
+Reduce(intersect,list(top_50_clust_1$name,top_50_clust_2$name))
+Reduce(intersect,list(top_50_clust_1, top_50_clust_2, top_50_clust_2, top_50_clust_2))
+Reduce(intersect,list(top_50_clust_1, top_50_clust_2, top_50_clust_3, top_50_clust_4))
+Reduce(intersect,list(top_50_clust_1, top_50_clust_2))
+Reduce(intersect,list(top_50_clust_1, top_50_clust_3))
+Reduce(intersect,list(top_50_clust_1, top_50_clust_4))
+library(yelpRecommender)
+data("join100Sample")
+dim(join100Sample)
+names(join100Sample)
+u <- appendUserData(join100Sample)
+dim(u)
+names(u)
+data("join100Sample","user100Sample")
+data("join100Sample","user100Sample")
+dim(user100Sample)
+names(user100Sample)
+u <- appendUserData(fulldata = join100Sample, userdata = join100Sample)
+dim(u)
+names(u)
+source('~/Dropbox/Stats290/Project_Shared/package_folders/yelpRecommender/R/addFeatures.R')
+u <- appendUserData(fulldata = join100Sample, userdata = join100Sample)
+library(dplyr)
+library(gender)
+u <- appendUserData(fulldata = join100Sample, userdata = join100Sample)
+appendUserData <- function(fulldata, userdata) {
+userdata <- userdata %>%
+dplyr::mutate(.,
+yelping_since = convertDate(yelping_since),
+active_days = featActiveDays(yelping_since))
+female <- featPredFemale(userdata$user_name)
+u <- (left_join(userdata,female,by = "user_name"))
+b <- featSumBusDataByUser(fulldata)
+left_join(u, b, by = "user_id") %>%
+lapply(., function (x) {x[is.na(x)] <- median(x,na.rm = TRUE);x}) %>% #replaces NAs with median
+as.data.frame %>%
+mutate(.,
+user_id = as.character(user_id),
+user_name = as.character(user_name))
+}
+u <- appendUserData(fulldata = join100Sample, userdata = join100Sample)
+rm(u)
+u <- appendUserData(fulldata = join100Sample, userdata = join100Sample)
+b <- featSumBusDataByUser(join100Sample)
+u <- left_join(user100sample,female,by = "user_name"))
+u <- left_join(user100sample,female,by = "user_name")
+library(yelpRecommender)
+data("join100Sample")
+data("user100Sample")
+dim(user100Sample)
+names(user100Sample)
+u <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+dim(u)
+names(u)
+data("join100Sample")
+data("user100Sample")
+dim(user100Sample)
+names(user100Sample)
+oldw <- getOption("warn")
+options(warn = -1)
+u <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+options(warn = oldw)
+dim(u)
+1+1
+example("appendUserData")
+?appendUserData
+?appendUserData
+?appendUserData
+?appendUserData
+example("appendUserData")
+data("join100Sample")
+data("user100Sample")
+dim(user100Sample)
+names(user100Sample)
+u <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+dim(u)
+names(u)
+example("appendUserData")
+?appendUserData
+data("join100Sample")
+data("user100Sample")
+userFeatures <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+head(appendKmeansCluster(userFeatures))[,c(user_id,user_name,km_cluster)]
+head(appendKmeansCluster(userFeatures))[,c("user_id","user_name","km_cluster")]
+table(appendKmeansCluster(userFeatures))[,"km_cluster")]
+table(appendKmeansCluster(userFeatures))[,"km_cluster"]
+userCluster <- appendKmeansCluster(userFeatures)[,c("user_id","user_name","km_cluster")]
+head(userCluster)
+table(userCluster$km_cluster)
+userCluster <- appendKmeansCluster(userFeatures, k = 4)[,c("user_id","user_name","km_cluster")]
+head(userCluster)
+table(userCluster$km_cluster)
+userFeatures <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+head(appendKmeansCluster(userFeatures))[,c(user_id,user_name,km_cluster)]
+library(yelpRecommender)
+?appendKmeansCluster
+example("appendKmeansCluster")
+?appendKmeansCluster
+seq_along(4)
+seq(4)
+data("join100Sample")
+data("user100Sample")
+userFeatures <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+userCluster <- appendKmeansCluster(userFeatures, k = 4)
+recos <- recommendByCluster(joinedData = join100Sample, userProfile = userCluster, numberReco = 20, minClusterReview = 2)
+sapply(seq(k), function (x) {print(head(recos[[x]]))})
+sapply(seq(clusters), function (x) {print(head(recos[[x]]))})
+clusters <- 4
+sapply(seq(clusters), function (x) {print(head(recos[[x]]))})
+sapply(seq(clusters), function (x) {print(head(recos[[x]])[,c("cluster_grp","name")])})
+sapply(seq(clusters), function (x) {print(recos[[x]])[c(1:5),c("cluster_grp","name")])})
+sapply(seq(clusters), function (x) {print(recos[[x]])[c(1:5),c("cluster_grp","name")]})
+1+1
+1
+?recommendByCluster
+example("recommendByCluster")
+data("join100Sample")
+data("user100Sample")
+clusters <- 4
+userFeatures <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+userCluster <- appendKmeansCluster(userFeatures, k = clusters)
+recos <- recommendByCluster(joinedData = join100Sample, userProfile = userCluster, numberReco = 20, minClusterReview = 2)
+lapply(seq(clusters), function (x) {print(head(recos[[x]])[,c("cluster_grp","name")])})
+data("join100Sample")
+data("user100Sample")
+clusters <- 4
+userFeatures <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+userCluster <- appendKmeansCluster(userFeatures, k = clusters)
+recos <- recommendByCluster(joinedData = join100Sample, userProfile = userCluster, numberReco = 20, minClusterReview = 2)
+lapply(seq(clusters), function (x) {print(head(recos[x])[,c("cluster_grp","name")])})
+print(head(recos))
+print(head(recos)[,c("cluster_grp","name")])
+print(head(recos)[[,c("cluster_grp","name")]])
+example("recommendByCluster")
+?recommendByCluster
+example("recommendByCluster")
+df <- data.frame()
+data("join100Sample")
+data("user100Sample")
+clusters <- 4
+userFeatures <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+userCluster <- appendKmeansCluster(userFeatures, k = clusters)
+joinedData <- join100Sample
+userProfile <- userCluster
+data <- addCluster(joinedData, userProfile)
+addCluster <- function (joinedData, userProfile, joinVariable = "user_id") {
+left_join(joinedData,userProfile[,c("user_id","km_cluster")],by = "user_id")
+}
+data <- addCluster(joinedData, userProfile)
+View(addCluster)
+joinedData <- join100Sample
+joinedData <- join100Sample
+data("join100Sample")
+data("user100Sample")
+clusters <- 4
+userFeatures <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+userCluster <- appendKmeansCluster(userFeatures, k = clusters)
+joinedData <- join100Sample
+data("join100Sample")
+data("user100Sample")
+clusters <- 4
+userFeatures <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+data("join100Sample")
+userCluster <- appendKmeansCluster(userFeatures, k = clusters)
+joinedData <- join100Sample
+userProfile <- userCluster
+data <- addCluster(joinedData, userProfile)
+df <- data.frame()
+bus_ids <- unique(data$business_id)
+out <- lapply(bus_id in bus_ids, function(x) {mean(data$review_stars[data$])})
+out <- lapply(bus_ids, function(x) {mean(data$review_stars[data$])})
+out <- lapply(bus_ids, function(x) {mean(data$review_stars[data$km_cluster])})
+bus_ids <- unique(data$business_id)
+df$bus_id <- bus_ids
+df <- data.frame(bus_ids)
+for(bus_id in bus_ids) {
+out <- data %>%
+filter(business_id == bus_id) %>%
+lapply(unique(.$km_cluster), function(x) {mean(data$review_stars[data$km_cluster==x])})
+left_join(df,out)
+for(bus_id in bus_ids) {
+out <- data %>%
+filter(business_id == bus_id) %>%
+lapply(unique(.$km_cluster), function(x) {mean(data$review_stars[data$km_cluster==x])})
+left_join(df,out)
+}
+for(bus_id in bus_ids) {
+out <- data %>%
+filter(business_id == bus_id) %>%
+lapply(unique(data$km_cluster), function(x) {mean(data$review_stars[data$km_cluster==x])})),.)
+left_join(df,out)
+}
+for(bus_id in bus_ids) {
+out <- data %>%
+filter(business_id == bus_id) %>%
+lapply(unique(data$km_cluster), function(x) {mean(data$review_stars[data$km_cluster==x])})
+left_join(df,out)
+}
+unique(data$km_cluster)
+for(bus_id in bus_ids) {
+out <- data %>%
+filter(business_id == bus_id) %>%
+lapply((unique(data$km_cluster)), function(x) {mean(data$review_stars[data$km_cluster==x])})
+left_join(df,out)
+}
+clusters <- unique(data$km_cluster)
+for(bus_id in bus_ids) {
+out <- data %>%
+filter(business_id == bus_id) %>%
+lapply(clusters, function(x) {mean(data$review_stars[data$km_cluster==x])})
+left_join(df,out)
+}
+?lapply
+seq_along(clusters)
+for(bus_id in bus_ids) {
+out <- data %>%
+filter(business_id == bus_id) %>%
+lapply(seq_along(clusters), function(x) {mean(data$review_stars[data$km_cluster==x])})
+left_join(df,out)
+}
+lapply(seq_along(clusters), function (x) {5 + x})
+1
+library(yelpRecommender)
+?recommendByCluster
+example("recommendByCluster")
+install.packages("H2O")
+if ("package:h2o" %in% search()) { detach("package:h2o", unload=TRUE) }
+if ("h2o" %in% rownames(installed.packages())) { remove.packages("h2o") }
+pkgs <- c("methods","statmod","stats","graphics","RCurl","jsonlite","tools","utils")
+for (pkg in pkgs) {
+if (! (pkg %in% rownames(installed.packages()))) { install.packages(pkg) }
+}
+install.packages("h2o", type="source", repos=(c("http://h2o-release.s3.amazonaws.com/h2o/rel-turan/3/R")))
+library(h2o)
+localH2O = h2o.init(nthreads=-1)
+install.packages("h2o", type="source", repos=(c("http://h2o-release.s3.amazonaws.com/h2o/rel-turan/3/R")))
+library(h2o)
+localH2O = h2o.init(nthreads=-1)

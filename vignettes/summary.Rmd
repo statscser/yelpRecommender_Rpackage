@@ -1,0 +1,101 @@
+---
+title: "yelpRecommender Vignette"
+author: "Xueying Liu and Ken Calhoon"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{yelpRecommender Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+####Package authors: Xueying Liu (xyliu44) and Ken Calhoon (kcalhoon).  
+
+The package was jointly developed by the authors. The author of each function is noted in the documentation and in the summary below.
+
+Data: **All examples and functions** can be run by join100Sample.rda and user100Sample.rda in the data folder. We have ignored a NOTE about package size in order to bundle the sample data with the package. 
+We did not include **Two full datasets** in the package (over 500MB). We can these provide if needed
+
+Notes: we have three NOTES all seem minor. 1) size of package--can't address since data included. 2) "checking CRAN incoming feasibility"--this seems to be a CRAN specific note. 3) "No repository set, so cyclic dependency check skipped"--unclear how to fix.
+
+####yelpRecommender Package Objectives and Results
+The yelpRecommender package addresses a need to customize business recommendations  by user. We deliver customized results through two methods: cluster-based and recommendation engine approaches.
+
+These methods can be applied to any review database. We used the Yelp dataset (https://www.yelp.com/dataset_challenge). We focused on **restaurants** in the **Phoenix, AZ** area for building our package. 
+
+The results are encouraging. Compared to the results that would be served up by simple average scores , we see very different results using personalization approaches. We  see restaurants with low "total" scores being relevant for specific customers or cluster segments. We also see significant differences in the mean scores by cluster for restaurants.
+
+####yelpRecommender Package Summary
+* **Source data**  
+    * The **source data** is JSON format from the Yelp Challenge (https://www.yelp.com/dataset_challenge).
+* **Data wrangling** (part *a* from the proposal) [Liu]
+    + Functions converting from JSON data to dataframes we could manipulate in R including: *jsonToList* [Calhoon], *listToDataFrame* [Liu] and *filterAndJoin* [Liu].
+    
+```{r}
+library(yelpRecommender)
+# from JSON to list
+fileloc <- system.file("extdata", "sample_business.json", package = "yelpRecommender")
+busSampleList <- yelpRecommender::jsonToList(fileloc)
+class(busSampleList)
+
+# from list to data frame
+busSampleDataFrame <- listToDataFrame(busSampleList, "business")
+class(busSampleDataFrame)
+```
+    
+* **Adding Features** (part *b*) [Calhoon]
+    + Features were developed from the user profile data and by looking at the types of restaurants the user has visited (and associated attributes). We added **19 new features**.
+    + The wrapper function is *appendUserData* which calls on helper functions such as *featActiveDays*, *featPredFemale* and *featSumBusDataByUser*
+* **Cluster Users** (part *c*) [Calhoon]
+    + The wrapper function is *appendKmeansCluster* which uses a helper function *prepKmeansData* so scale and select specific variables.
+    
+```{r}
+#-add features-#
+data("user100Sample")
+dim(user100Sample)
+userFeatures <- appendUserData(fulldata = join100Sample, userdata = user100Sample)
+dim(userFeatures) #19 user features added
+#-add clusters-#
+userCluster <- appendKmeansCluster(userFeatures, k = 4)[,c("user_id","user_name","km_cluster")]
+table(userCluster$km_cluster)
+```
+
+* **Graphical Comparison of Cluster Restaurant Scores** (part *d*) [Calhoon]
+    + The *graphScoreDiff* function produces a histogram of the delta between a restaurant's max mean cluster score and the min mean cluster score (for different clusters).
+    
+```{r}
+dataCluster <- addCluster(join100Sample,userCluster)
+graphScoreDiff(dataCluster)
+```
+
+* **Basic Recommendation Engine** (part *e*) [Liu]
+    + We built a basic recommendation engine *basicRecommend* based on the package *recommenderlab*. It gives predicted ratings based on the existing ratings we have and we choose to use the *User-based Collaborative Filtering*, which can be improved and compared after we add more features to generate better user similarity measures.
+
+```{r}
+# Recommendations based on ratings
+data("join100Sample")
+basicRecommend(join100Sample, userID = join100Sample$user_id[1], topNum = 5)
+```
+
+* **Improve Recommendations** (part *f*) [Calhoon and Liu]
+    + *recommendByKeyWords* [Liu]: we give recommendations by asking the user to specify some features of the business, such as state, city, and some key words of business types. We filter the businesses that match the condition and recommend the highly-rated ones.
+    + *recommendByCluster* [Calhoon]: recommendations are made by cluster assignment
+
+    ```{r}
+# Recommendations based on business features
+data("busSampleDataFrame")
+recomByKeyWords(busSampleDataFrame, types = "golf")
+
+# Recommendations based on clusters
+recos <- recommendByCluster(joinedData = join100Sample, userData = user100Sample, numberReco = 20, minClusterReview = 2, clusters = 4)
+sapply((1:2), function (x) {print(head(recos[[x]], n = 3)[,c("cluster_grp","name")])})
+```
+
+* **Test on hypothetical customers and show differences** (part *g*) [Calhoon & Liu]
+    +  Difference in recommendations is apparent in the recommendations above.
+
+####yelpRecommender Next Steps
+* **Next Steps**  
+    * Cold Start: Inital classification of the predictors of cluster scores shows that lat/lon, alcohol, noise and price preferences could be used for cold start recommendations using these package components.
+    * Natural Language Processing: The Yelp dataset contained many user, business and review attributes making NLP unnecessary. However, applying NLP to extract more features would be worth investigating.
+    * Generalization: Re-package the code to make it more general across other review databases. 
